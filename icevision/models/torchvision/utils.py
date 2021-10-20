@@ -2,6 +2,7 @@ __all__ = [
     "remove_internal_model_transforms",
     "patch_rcnn_param_groups",
     "patch_retinanet_param_groups",
+    "patch_ssdlite_param_groups"
 ]
 
 from icevision.imports import *
@@ -53,4 +54,11 @@ def patch_retinanet_param_groups(model: nn.Module):
         model=model,
         head_layers=[model.head],
         backbone_param_groups=model.backbone.param_groups(),
+    )
+    
+def patch_ssdlite_param_groups(model: nn.Module):
+    return patch_param_groups(
+        model=model,
+        head_layers=[model],
+        backbone_param_groups=[],
     )

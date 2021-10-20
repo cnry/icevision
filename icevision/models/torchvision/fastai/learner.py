@@ -44,3 +44,28 @@ def rcnn_learner(
         )
 
     return learn
+
+def ssdlite_learner(
+    dls: List[Union[DataLoader, fastai.DataLoader]],
+    model: nn.Module,
+    cbs=None,
+    **kwargs,
+):
+    learn = adapted_fastai_learner(
+        dls=dls,
+        model=model,
+        cbs=cbs,
+        loss_func=loss_fn,
+        **kwargs,
+    )
+
+    is_wandb = [cb for cb in learn.cbs if "WandbCallback" in str(type(cb))]
+    if len(is_wandb) == 1:
+        logger.warning("Wandb quickfix implemented, for more info check issue #527")
+        wandb.watch = noop_watch
+    if len(is_wandb) > 1:
+        raise ValueError(
+            f"It seems you are passing {len(is_wandb)} `WandbCallback` instances to the `learner`. Only 1 is allowed."
+        )
+
+    return learn
